@@ -1,9 +1,12 @@
 #import "@preview/touying:0.6.1": *
 #import "themes/theme.typ": *
-#import "@preview/fontawesome:0.6.0": *
 #import "@preview/ctheorems:1.1.3": *
 #import "@preview/numbly:0.1.0": numbly
 #import "utils.typ": *
+
+#let fcite(key) = {
+  footnote[#cite(key, form: "prose"), #cite(key, form: "full")]
+}
 
 // Pdfpc configuration
 // typst query --root . ./example.typ --field value --one "<pdfpc-file>" > ./example.pdfpc
@@ -25,15 +28,19 @@
 
 // Theorems configuration by ctheorems
 #show: thmrules.with(qed-symbol: $square$)
-#let theorem = thmbox("theorem", "Theorem", fill: rgb("#eeffee"))
-#let corollary = thmplain(
-  "corollary",
-  "Corollary",
-  base: "theorem",
-  titlefmt: strong
+#let theorem = thmbox(
+  "theorem",
+  "Theorem",
+  fill: rgb("#23373b").lighten(95%),
+  stroke: rgb("#23373b") + 0.5pt,
+  radius: 0.5em,
+  inset: (x: 1em, y: 1em),
 )
-#let definition = thmbox("definition", "Definition", inset: (x: 1.2em, top: 1em))
-#let example = thmplain("example", "Example").with(numbering: none)
+
+#let definition(title: "Definition", body) = beamer-block(title, body, color: rgb("#23373b"))
+#let example(title: "Example", body) = beamer-block(title, body, color: rgb("#008080"))
+#let alert(title: "Alert", body) = beamer-block(title, body, color: rgb("#eb811b"))
+#let corollary(title: "Corollary", body) = beamer-block(title, body, color: rgb("#23373b").lighten(20%))
 #let proof = thmproof("proof", "Proof")
 
 #show: theme.with(
@@ -42,7 +49,6 @@
   config-common(
     // handout: true,
     preamble: pdfpc-config,
-    show-bibliography-as-footnote: bibliography(title: none, "bibliography.bib"),
   ),
   config-info(
     title: [Presentation Title],
@@ -59,8 +65,10 @@
   ),
 )
 
-#set text(font: "Fira Sans", weight: "light", size: 20pt)
-#show math.equation: set text(font: "Fira Math")
+#set text(font: ("Fira Sans", "Roboto", "DejaVu Sans", "Arial"), weight: 350, size: 20pt)
+#show math.equation: set text(font: ("Fira Math", "DejaVu Sans Mono"))
+#set strong(delta: 200)
+#set par(justify: true)
 
 #set raw(tab-size: 4)
 #show raw: set text(size: 1em)
@@ -78,9 +86,23 @@
 
 #title-slide()
 
-// == Outline <touying:hidden>
+== New Styles Showcase
 
-// #components.adaptive-columns(outline(title: none, indent: 1em))
+#definition(title: "Agentic AI")[
+  An AI system that can autonomously plan, use tools, and execute multi-step tasks to achieve a goal.
+]
+
+#example[
+  A coding assistant that can search for files, run tests, and fix bugs without constant human intervention.
+]
+
+#alert(title: "Warning")[
+  Agents can enter infinite loops if not properly constrained!
+]
+
+#theorem(title: "Scaling Laws")[
+  Performance improves predictably with more compute, data, and parameters.
+]
 
 = Animation
 
@@ -137,8 +159,8 @@
 == Slide
 *Bold* and _italic_ text.
 
-This is a citation #cite(label("DBLP:journals/fgcs/FarabegoliPCV24")).
-This another citation #cite(label("DBLP:journals/iot/FarabegoliPCV24"))
+This is a citation #fcite(<farabegoli2024scalability>).
+This another citation #fcite(<farabegoli2024dynamic>)
 
 #alert[This is an alert.]
 
@@ -164,13 +186,8 @@ fun main() {
 
 #lorem(34)
 
-== FontAwesome icons
+#slide(title: [Bibliography])[
+  #set text(size: 0.6em)
+  #bibliography("bibliography.bib", title: none, style: "ieee")
+]
 
-=== Icon in a title #fa-java()
-
-#fa-icon("github") -- Github icon \
-#fa-icon("github", fill: blue) -- Github icon blue fill
-
-// #slide[
-//   #bibliography("bibliography.bib")
-// ]
